@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskRequest;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -15,34 +16,52 @@ class TaskController extends Controller
      */
     public function index()
     {
-        echo 'hello1231';
-    }
-
-    public function store(TaskRequest $request)
-    {
-        $task = Task::create($request->all());
-        return response()->json(['id' => $task->id]);
+        $carbon = Carbon::now();
+        // $carbon->now()->weekOfYear();
+        dd($carbon->weekOfYear);
+        $task = Task::paginate(10);
+        return response()->json(['data' => $task]);
     }
 
     /**
-     * Display the specified resource.
+     * Store a newly created resource in storage.
      *
-     * @param  \App\Models\Task  $task
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Task $task)
+    public function store(TaskRequest $request)
     {
-        //
+        $task = Task::create($request->all());
+        return response()->json(['data' => ['id' => 'TASK-' . $task->id]]);
+    }
+
+    public function taskEstimate(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $task->update($request->all());
+        return response()->json(['id' => $task->id, 'estimation' => $task->estimate]);
+    }
+
+    public function taskClose($id)
+    {
+        $task = Task::findOrFail($id);
+        $task->update(['status' => Task::STATUS_CLOSE]);
+        return response()->json(['taskId' => $task->id]);
+    }
+    public function show($id)
+    {
+        $task = Task::findOrFail($id);
+        dd($task);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Task  $task
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -50,10 +69,10 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Task  $task
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
         //
     }
