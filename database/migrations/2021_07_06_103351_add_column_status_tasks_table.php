@@ -14,7 +14,7 @@ class AddColumnStatusTasksTable extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->string('status', 10);
+            $table->string('status', 10)->default('wait');
         });
     }
 

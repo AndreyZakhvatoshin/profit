@@ -17,7 +17,7 @@ class CreateTasksTable extends Migration
             $table->id();
             $table->string('title', 100);
             $table->text('description');
-            $table->char('estimate', 5);
+            $table->char('estimate', 5)->nullable();
         });
     }
 
