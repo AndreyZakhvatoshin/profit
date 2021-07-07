@@ -2,16 +2,15 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\APIFormRequest;
 
-class TaskRequest extends FormRequest
+class TaskRequest extends APIFormRequest
 {
 
     public function authorize()
     {
         return true;
     }
-
 
     public function rules()
     {
