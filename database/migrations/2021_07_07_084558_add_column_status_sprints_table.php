@@ -14,7 +14,7 @@ class AddColumnStatusSprintsTable extends Migration
     public function up()
     {
         Schema::table('sprints', function (Blueprint $table) {
-            $table->string('status', 10);
+            $table->string('status', 10)->default('inactive');
         });
     }
 
