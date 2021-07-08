@@ -16,9 +16,10 @@ use App\Http\Controllers\SprintTaskController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::apiResource('/tasks', TaskController::class);
-Route::patch('/estimate/{task}', [TaskController::class, 'taskEstimate']);
-Route::patch('/{task}/close', [TaskController::class, 'taskClose']);
-Route::apiResource('/sprints', SprintController::class);
+Route::post('/tasks', [TaskController::class, 'store']); //title, description
+Route::patch('/estimate/{task}', [TaskController::class, 'taskEstimate']); //estimate, task_id
+Route::post('/tasks/{task}/close', [TaskController::class, 'taskClose']); //id task
+Route::post('/sprint', [SprintController::class, 'store']); //week
 Route::post('/sprint/task/add', [SprintTaskController::class, 'store']);
-Route::patch('/sprint/{sprint}/start', [SprintController::class, 'start']);
+Route::post('/sprint/{sprint}/start', [SprintController::class, 'start']);
+Route::post('/sprint/{sprint}/close', [SprintController::class, 'close']);
