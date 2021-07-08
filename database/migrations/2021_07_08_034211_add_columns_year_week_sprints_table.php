@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnStatusSprintsTable extends Migration
+class AddColumnsYearWeekSprintsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class AddColumnStatusSprintsTable extends Migration
     public function up()
     {
         Schema::table('sprints', function (Blueprint $table) {
-            $table->string('status', 10)->default('inactive');
+            $table->string('year', 4);
+            $table->string('week', 2);
         });
     }
 
@@ -26,7 +27,8 @@ class AddColumnStatusSprintsTable extends Migration
     public function down()
     {
         Schema::table('sprints', function (Blueprint $table) {
-            $table->dropColumn('status');
+            $table->dropColumn('year');
+            $table->dropColumn('week');
         });
     }
 }

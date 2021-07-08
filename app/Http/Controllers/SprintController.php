@@ -4,69 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Helpers\SprintHelper;
 use App\Http\Requests\SprintRequest;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Models\Sprint;
 
 class SprintController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $carbon = new Carbon();
-        // dd($carbon->year);
-        $converted = Str::substr($carbon->year, 2, 2);
-        dd($converted);
-        // dd($carbon->dayOfWeek);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(SprintRequest $request)
     {
-        $sprintName = SprintHelper::createSprintName($request->input('week'));
-        
+        $sprintData = SprintHelper::createSprintData($request->input('week'));
+        $sprint = Sprint::create($sprintData);
+        return response()->json(['year' => $sprint->year, 'week' => $sprint->week]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function start($id)
     {
-        //
+        $errors = [];
+        if (!SprintHelper::checkEstimateTask($id)) {
+            $errors['Global'][] = ['Невозможно начать спринт. Оцените все задачи'];
+        }
+        if (SprintHelper::hasActiveSprint()) {
+            $errors['Global'][] = ['Есть активный спринт'];
+        }
+        if (!SprintHelper::checkSprintStart($id)) {
+            $errors['Global'][] = ['Еще рано начинать спринт'];
+        }
+        if (!SprintHelper::checkTaskDuration($id)) {
+            $errors['Global'][] = ['Количество времени задач превышает 40 часов'];
+        }
+        if (!empty($errors)) {
+            return response()->json(['Errors' => $errors]);
+        }
+        $sprint = Sprint::findOrFail($id);
+        $sprint->update(['status' => 'active']);
+        return response()->json(['sprintId' => $sprint->name]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function close($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        if (!SprintHelper::checkClosedTask($id)) {
+            return response()->json(['Errors' => ['Global' => 'Спринт содержит не закрытые задачи']]);
+        }
+        $sprint = Sprint::findOrFail($id);
+        $sprint->update(['status' => 'close']);
+        return response()->json(['sprintId' => $sprint->name]);
     }
 }
