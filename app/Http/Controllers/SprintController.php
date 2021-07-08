@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\SprintHelper;
 use App\Http\Requests\SprintRequest;
+use App\Models\Sprint;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -32,8 +33,19 @@ class SprintController extends Controller
      */
     public function store(SprintRequest $request)
     {
-        $sprintName = SprintHelper::createSprintName($request->input('week'));
-        
+        $sprintData = SprintHelper::createSprintData($request->input('week'));
+        $sprint = Sprint::create($sprintData);
+        return response()->json(['year' => $sprint->year, 'week' => $sprint->week]);
+    }
+
+    public function start($id)
+    {
+        if (!SprintHelper::checkEstimateTask($id)) {
+            return response()->json(['Global' => 'Невозможно начать спринт. Оцените все задачи']);
+        }
+        if (SprintHelper::hasActiveSprint()) {
+            return response()->json(['Global' => 'Есть активный спринт']);
+        }
     }
 
     /**
