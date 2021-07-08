@@ -40,4 +40,47 @@ class SprintHelper
         $sprints = Sprint::where('status', 'active')->get();
         return empty($sprints);
     }
+
+    public static function checkSprintStart($id)
+    {
+        $sprint = Sprint::findOrFail($id);
+        $date = new Carbon();
+        if (($sprint->week - $date->weekOfYear > 1) || ($date->dayOfWeek < 2)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static function checkTaskDuration($id)
+    {
+        $tasks_id = SprintTask::select('task_id')->where('sprint_id', $id)->get();
+        $tasks = Task::whereIn('id', $tasks_id)->get();
+        $min = 0;
+        $hours = 0;
+        foreach ($tasks as $task) {
+            if (preg_match('/h/', $task->estimate)) {
+                $hoursCount = explode('h', $task->estimate);
+                $hours += $hoursCount[0];
+            }
+            if (preg_match('/m/', $task->estimate)) {
+                $minCount = explode('m', $task->estimate);
+                $min += $minCount[0];
+            }
+        }
+        return ($min / 60) + $hours <= 40 ? true : false;
+
+    }
+
+    public static function checkClosedTask($id)
+    {
+        $tasks_id = SprintTask::select('task_id')->where('sprint_id', $id)->get();
+        $tasks = Task::whereIn('id', $tasks_id)->get();
+        $messages = [];
+        foreach ($tasks as $task) {
+            if ($task->estimate !== Task::STATUS_CLOSE) {
+                $messages[$task->id] = 'Задача не закрыта';
+            }
+        }
+        return empty($messages);
+    }
 }
