@@ -10,6 +10,11 @@ use Illuminate\Support\Str;
 
 class SprintHelper
 {
+    /**
+     * создает массив данных для записи спринта
+     * @param string $week
+     * return array
+     */
     public static function createSprintData(string $week): array
     {
         $carbon = Carbon::now();
@@ -22,6 +27,11 @@ class SprintHelper
         ];
     }
 
+    /**
+     * Проверяет оценку задачи в спринте
+     * @param int $id
+     * return bool
+     */
     public static function checkEstimateTask(int $id): bool
     {
         $tasks_id = SprintTask::select('task_id')->where('sprint_id', $id)->get();
@@ -35,13 +45,23 @@ class SprintHelper
         return empty($messages);
     }
 
+    /**
+     * Проверяет наличие активных спринтов
+     * return bool
+     */
     public static function hasActiveSprint(): bool
     {
         $sprints = Sprint::where('status', 'active')->get();
         return empty($sprints);
     }
 
-    public static function checkSprintStart($id)
+    /**
+     * Потверяет время начала спринта,
+     * если спринт запускают за 7 дней и раньше - возвращает false
+     * @param sprint_id
+     * return bool
+     */
+    public static function checkSprintStart($id): bool
     {
         $sprint = Sprint::findOrFail($id);
         $date = new Carbon();
@@ -51,6 +71,12 @@ class SprintHelper
         return true;
     }
 
+    /**
+     * Проверяет продолжительность всех задач в спринте.
+     * Если количество часов превышает 40 возвращает false
+     * @param sprint_id
+     * return bool
+     */
     public static function checkTaskDuration($id)
     {
         $tasks_id = SprintTask::select('task_id')->where('sprint_id', $id)->get();
@@ -68,10 +94,14 @@ class SprintHelper
             }
         }
         return ($min / 60) + $hours <= 40 ? true : false;
-
     }
 
-    public static function checkClosedTask($id)
+    /**
+     * Проверяет наличие открытых задач в спринте.
+     * @param int id
+     * @return bool
+     */
+    public static function checkClosedTask($id): bool
     {
         $tasks_id = SprintTask::select('task_id')->where('sprint_id', $id)->get();
         $tasks = Task::whereIn('id', $tasks_id)->get();
