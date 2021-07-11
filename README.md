@@ -11,6 +11,7 @@ cd profit
 
 ```sh
 composer install
+создать .env файл на основе файла .env.example
 php artisan key:generate
 php artisan migrate
 ```
