@@ -29,12 +29,12 @@ php artisan migrate
 
 
 ## Запросы к api
-| Метод | url                       | аргументы |
-| ----- | ------------------------- | --------- |
-| PATCH | api/estimate/{task}       |           |
-| POST  | api/sprint                |           |
-| POST  | api/sprint/task/add       |           |
-| POST  | api/sprint/{sprint}/close |           |
-| POST  | api/sprint/{sprint}/start |           |
-| POST  | api/tasks                 |           |
-| POST  | api/tasks/{task}/close    |           |
+| Метод | url                       | аргументы                  |
+| ----- | ------------------------- | -------------------------- |
+| PATCH | api/estimate/{task}       | {task} - task_id, estimate |
+| POST  | api/sprint                | week                       |
+| POST  | api/sprint/task/add       | sprint_id, task_id         |
+| POST  | api/sprint/{sprint}/close | {sprint} - sprint_id       |
+| POST  | api/sprint/{sprint}/start | {sprint} - sprint_id       |
+| POST  | api/tasks                 | title, description         |
+| POST  | api/tasks/{task}/close    | {task} - task_id           |
